@@ -1,5 +1,6 @@
 package com.example.support_ticket_system.domain.entity.enums;
 
 public enum Role {
-        ADMIN, AGENT, CUSTOMER
+        USER,
+        ADMIN
 }

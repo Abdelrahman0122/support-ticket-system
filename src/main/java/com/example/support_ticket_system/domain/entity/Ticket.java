@@ -4,6 +4,7 @@ package com.example.support_ticket_system.domain.entity;
 import com.example.support_ticket_system.domain.entity.enums.TicketStatus;
 import com.example.support_ticket_system.domain.entity.enums.Priority;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -24,9 +25,11 @@ public class Ticket {
     private String description;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(255)")
     private TicketStatus status;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(255)")
     private Priority priority;
 
     @ManyToOne
