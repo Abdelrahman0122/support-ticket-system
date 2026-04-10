@@ -1,6 +1,6 @@
 package com.example.support_ticket_system.domain.entity;
 
-
+import java.time.LocalDateTime;
 import com.example.support_ticket_system.domain.entity.enums.TicketStatus;
 import com.example.support_ticket_system.domain.entity.enums.Priority;
 
@@ -37,4 +37,10 @@ public class Ticket {
 
     @ManyToOne
     private User createdBy;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
 }

@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -56,13 +58,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
 
             String email = jwtService.extractEmail(token);
-            if (email == null) {
+            String role = jwtService.extractRole(token);
+            if (email == null || role == null) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
 
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(email, null,
-                    Collections.emptyList());
+            List<SimpleGrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(email, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(auth);
 
         } catch (Exception e) {
