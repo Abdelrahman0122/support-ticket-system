@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Desk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #f5f6fa; --card: #fff; --line: #e6e8ef; --text: #1b1f2a; --muted: #6b7285;
+            --brand: #5b4ee6; --brand-soft: #eeecfd;
+            --open: #2563eb; --progress: #d97706; --resolved: #059669; --closed: #64748b;
+            --low: #64748b; --medium: #d97706; --high: #dc2626;
+        }
+        body { font-family: Inter, system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+        button, input, select, textarea { font: inherit; color: inherit; }
+        button { cursor: pointer; }
+        .hidden { display: none !important; }
+
+        /* auth */
+        .auth { min-height: 100vh; display: grid; place-items: center; padding: 16px; }
+        .auth-card { width: 100%; max-width: 380px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 32px; box-shadow: 0 10px 30px rgba(20, 20, 50, .06); }
+        .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; }
+        .logo i { width: 30px; height: 30px; border-radius: 8px; background: var(--brand); display: grid; place-items: center; color: #fff; font-style: normal; font-size: 15px; }
+        .auth h1 { font-size: 22px; margin: 24px 0 4px; }
+        .auth p { color: var(--muted); margin-bottom: 20px; }
+        .tabs { display: flex; background: var(--bg); border-radius: 10px; padding: 4px; margin-bottom: 18px; }
+        .tabs button { flex: 1; border: 0; background: none; padding: 8px; border-radius: 8px; font-weight: 600; color: var(--muted); }
+        .tabs button.on { background: var(--card); color: var(--text); box-shadow: 0 1px 3px rgba(0, 0, 0, .08); }
+        label { display: block; font-weight: 500; margin: 12px 0 6px; }
+        input, select, textarea { width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: #fff; outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
+        .btn { border: 0; background: var(--brand); color: #fff; font-weight: 600; padding: 10px 16px; border-radius: 10px; }
+        .btn.full { width: 100%; margin-top: 20px; }
+        .btn.ghost { background: none; color: var(--muted); border: 1px solid var(--line); }
+        .err { color: var(--high); margin-top: 12px; min-height: 18px; }
+
+        /* app */
+        header { background: var(--card); border-bottom: 1px solid var(--line); }
+        .bar { max-width: 1180px; margin: auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+        .who { display: flex; align-items: center; gap: 12px; color: var(--muted); }
+        .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--brand-soft); color: var(--brand); display: grid; place-items: center; font-weight: 700; }
+        .role { font-size: 11px; font-weight: 700; letter-spacing: .04em; padding: 3px 8px; border-radius: 999px; background: var(--brand-soft); color: var(--brand); }
+        main { max-width: 1180px; margin: auto; padding: 28px 24px 48px; }
+        .head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: 20px; }
+        .head h2 { font-size: 24px; }
+        .head p { color: var(--muted); margin-top: 4px; }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+        .stat { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; cursor: pointer; transition: border-color .15s; }
+        .stat.on { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
+        .stat span { display: flex; align-items: center; gap: 8px; color: var(--muted); font-weight: 500; }
+        .stat span::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+        .stat b { display: block; font-size: 28px; margin-top: 6px; }
+        .panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; padding: 12px 16px; background: #fafbfd; border-bottom: 1px solid var(--line); }
+        td { padding: 14px 16px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+        tr:last-child td { border-bottom: 0; }
+        .t-title { font-weight: 600; }
+        .t-desc { color: var(--muted); margin-top: 2px; max-width: 420px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .id { color: var(--muted); font-variant-numeric: tabular-nums; }
+        .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; color: var(--c); background: color-mix(in srgb, var(--c) 12%, white); white-space: nowrap; }
+        .pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
+        select.status { width: auto; padding: 5px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; color: var(--c); background: color-mix(in srgb, var(--c) 12%, white); border-color: transparent; }
+        .person { display: flex; align-items: center; gap: 8px; }
+        .person .avatar { width: 26px; height: 26px; font-size: 12px; }
+        .none { color: var(--muted); font-style: italic; }
+        .empty { padding: 48px; text-align: center; color: var(--muted); }
+
+        /* drawer */
+        .scrim { position: fixed; inset: 0; background: rgba(15, 18, 30, .35); display: flex; justify-content: flex-end; }
+        .drawer { width: min(420px, 100%); background: var(--card); height: 100%; padding: 28px; overflow: auto; }
+        .drawer h3 { font-size: 19px; margin-bottom: 4px; }
+        .row { display: flex; gap: 10px; margin-top: 24px; }
+        textarea { min-height: 110px; resize: vertical; }
+
+        @media (max-width: 760px) {
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .hide-sm { display: none; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- SIGN IN -->
+    <section class="auth" id="auth">
+        <form class="auth-card" id="authForm">
+            <div class="logo"><i>✓</i> Support Desk</div>
+            <h1 id="authTitle">Welcome back</h1>
+            <p>Track and resolve support requests in one place.</p>
+            <div class="tabs">
+                <button type="button" class="on" data-mode="login">Sign in</button>
+                <button type="button" data-mode="register">Create account</button>
+            </div>
+            <div id="nameField" class="hidden"><label for="name">Full name</label><input id="name"></div>
+            <label for="email">Email</label><input id="email" type="email" required>
+            <label for="password">Password</label><input id="password" type="password" required>
+            <button class="btn full" id="authBtn">Sign in</button>
+            <div class="err" id="authErr"></div>
+        </form>
+    </section>
+
+    <!-- APP -->
+    <div id="app" class="hidden">
+        <header>
+            <div class="bar">
+                <div class="logo"><i>✓</i> Support Desk</div>
+                <div class="who"><span class="role" id="role"></span><span id="me" class="hide-sm"></span>
+                    <div class="avatar" id="avatar"></div><button class="btn ghost" id="logout">Sign out</button>
+                </div>
+            </div>
+        </header>
+        <main>
+            <div class="head">
+                <div>
+                    <h2 id="heading">Tickets</h2>
+                    <p id="sub"></p>
+                </div>
+                <button class="btn" id="newBtn">+ New ticket</button>
+            </div>
+            <div class="stats" id="stats"></div>
+            <div class="panel">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th><th>Ticket</th><th>Priority</th><th>Status</th>
+                            <th class="hide-sm">Assignee</th><th class="hide-sm">Opened by</th><th class="hide-sm">Updated</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rows"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- NEW TICKET -->
+    <div class="scrim hidden" id="scrim">
+        <form class="drawer" id="ticketForm">
+            <h3>New ticket</h3>
+            <p style="color:var(--muted)">Describe the problem and we'll pick it up.</p>
+            <label for="tTitle">Title</label><input id="tTitle" required>
+            <label for="tDesc">Description</label><textarea id="tDesc" required></textarea>
+            <label for="tPriority">Priority</label>
+            <select id="tPriority"><option value="LOW">Low</option><option value="MEDIUM" selected>Medium</option><option value="HIGH">High</option></select>
+            <div id="assignField" class="hidden"><label for="tAssign">Assign to</label><select id="tAssign"></select></div>
+            <div class="row"><button class="btn">Create ticket</button><button type="button" class="btn ghost" id="cancel">Cancel</button></div>
+            <div class="err" id="ticketErr"></div>
+        </form>
+    </div>
+
+    <script>
+        const $ = id => document.getElementById(id);
+        const STATUS = { OPEN: ['Open', 'var(--open)'], IN_PROGRESS: ['In progress', 'var(--progress)'], RESOLVED: ['Resolved', 'var(--resolved)'], CLOSED: ['Closed', 'var(--closed)'] };
+        const PRIORITY = { LOW: ['Low', 'var(--low)'], MEDIUM: ['Medium', 'var(--medium)'], HIGH: ['High', 'var(--high)'] };
+        const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        const initial = email => esc((email || '?')[0].toUpperCase());
+        const ago = iso => {
+            const m = Math.round((Date.now() - new Date(iso)) / 60000);
+            return m < 1 ? 'just now' : m < 60 ? `${m}m ago` : m < 1440 ? `${Math.round(m / 60)}h ago` : `${Math.round(m / 1440)}d ago`;
+        };
+
+        let token = localStorage.getItem('token'), user = null, tickets = [], users = [], filter = null, mode = 'login';
+
+        async function api(path, opts = {}) {
+            const res = await fetch(path, { ...opts, headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}) } });
+            if (res.status === 401) { signOut(); throw new Error('Session expired. Please sign in again.'); }
+            if (!res.ok) throw new Error((await res.json().catch(() => ({}))).message || `Request failed (${res.status})`);
+            return res.status === 204 ? null : res.json();
+        }
+
+        // ── auth ──
+        document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
+            mode = b.dataset.mode;
+            document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x === b));
+            $('nameField').classList.toggle('hidden', mode === 'login');
+            $('authTitle').textContent = mode === 'login' ? 'Welcome back' : 'Create your account';
+            $('authBtn').textContent = mode === 'login' ? 'Sign in' : 'Create account';
+        });
+        $('authForm').onsubmit = async e => {
+            e.preventDefault(); $('authErr').textContent = '';
+            const body = { email: $('email').value, password: $('password').value, ...(mode === 'register' ? { name: $('name').value } : {}) };
+            try { token = (await api('/api/auth/' + mode, { method: 'POST', body: JSON.stringify(body) })).token; localStorage.setItem('token', token); start(); }
+            catch (err) { $('authErr').textContent = mode === 'login' ? 'Wrong email or password.' : err.message; }
+        };
+        function signOut() { token = null; localStorage.removeItem('token'); $('app').classList.add('hidden'); $('auth').classList.remove('hidden'); }
+        $('logout').onclick = signOut;
+
+        // ── app ──
+        async function start() {
+            const claims = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+            user = { email: claims.sub, role: claims.role };
+            const staff = user.role !== 'USER';
+            $('auth').classList.add('hidden'); $('app').classList.remove('hidden');
+            $('me').textContent = user.email; $('role').textContent = user.role; $('avatar').textContent = user.email[0].toUpperCase();
+            $('heading').textContent = staff ? 'All tickets' : 'My tickets';
+            $('sub').textContent = user.role === 'ADMIN' ? 'Every request across the team.' : user.role === 'AGENT' ? 'Tickets you opened or are working on.' : 'Requests you have opened.';
+            users = user.role === 'ADMIN' ? await api('/api/admin/users').catch(() => []) : [];
+            $('assignField').classList.toggle('hidden', !users.length);
+            $('tAssign').innerHTML = '<option value="">Unassigned</option>' + users.filter(u => u.role !== 'USER').map(u => `<option value="${u.id}">${esc(u.email)}</option>`).join('');
+            await load();
+        }
+
+        async function load() { tickets = await api('/api/tickets'); render(); }
+
+        function render() {
+            const staff = user.role !== 'USER';
+            $('stats').innerHTML = Object.entries(STATUS).map(([k, [label, c]]) =>
+                `<div class="stat ${filter === k ? 'on' : ''}" data-k="${k}" style="--c:${c}"><span>${label}</span><b>${tickets.filter(t => t.status === k).length}</b></div>`).join('');
+            const list = tickets.filter(t => !filter || t.status === filter).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+            $('rows').innerHTML = list.length ? list.map(t => {
+                const [sl, sc] = STATUS[t.status], [pl, pc] = PRIORITY[t.priority];
+                const status = staff
+                    ? `<select class="status" data-id="${t.id}" style="--c:${sc}">${Object.entries(STATUS).map(([k, [l]]) => `<option value="${k}" ${k === t.status ? 'selected' : ''}>${l}</option>`).join('')}</select>`
+                    : `<span class="pill" style="--c:${sc}">${sl}</span>`;
+                const person = u => u ? `<div class="person"><div class="avatar">${initial(u.email)}</div>${esc(u.email.split('@')[0])}</div>` : '<span class="none">Unassigned</span>';
+                return `<tr><td class="id">#${t.id}</td>
+                    <td><div class="t-title">${esc(t.title)}</div><div class="t-desc">${esc(t.description)}</div></td>
+                    <td><span class="pill" style="--c:${pc}">${pl}</span></td><td>${status}</td>
+                    <td class="hide-sm">${person(t.assignedTo)}</td><td class="hide-sm">${person(t.createdBy)}</td>
+                    <td class="hide-sm id">${ago(t.updatedAt)}</td></tr>`;
+            }).join('') : `<tr><td colspan="7" class="empty">No tickets here yet.</td></tr>`;
+        }
+
+        $('stats').onclick = e => { const s = e.target.closest('.stat'); if (s) { filter = filter === s.dataset.k ? null : s.dataset.k; render(); } };
+        $('rows').onchange = async e => {
+            if (!e.target.matches('select.status')) return;
+            await api(`/api/tickets/${e.target.dataset.id}/status?status=${e.target.value}`, { method: 'PATCH' });
+            await load();
+        };
+
+        // ── new ticket ──
+        $('newBtn').onclick = () => { $('ticketForm').reset(); $('ticketErr').textContent = ''; $('scrim').classList.remove('hidden'); $('tTitle').focus(); };
+        $('cancel').onclick = () => $('scrim').classList.add('hidden');
+        $('scrim').onclick = e => { if (e.target === $('scrim')) $('scrim').classList.add('hidden'); };
+        $('ticketForm').onsubmit = async e => {
+            e.preventDefault();
+            try {
+                await api('/api/tickets', { method: 'POST', body: JSON.stringify({ title: $('tTitle').value, description: $('tDesc').value, priority: $('tPriority').value, assignedToId: $('tAssign').value || null }) });
+                $('scrim').classList.add('hidden'); await load();
+            } catch (err) { $('ticketErr').textContent = err.message; }
+        };
+
+        if (token) start().catch(signOut);
+    </script>
+</body>
+
+</html>

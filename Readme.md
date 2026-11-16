@@ -2,6 +2,12 @@
 
 A comprehensive support ticket management system built with Spring Boot, featuring JWT authentication, role-based access control, and complete ticket lifecycle management.
 
+## 🖥️ Web dashboard
+
+Run the app and open `http://localhost:8080`. A built-in dashboard (one static page served by Spring Boot, plain HTML/CSS/JS) lets customers sign up, open tickets and follow their status, while agents and admins see the whole queue, assign tickets and move them through the workflow.
+
+![Support Desk dashboard](docs/dashboard.jpg)
+
 ## ✨ Features
 
 ### 🔐 Authentication & Security
